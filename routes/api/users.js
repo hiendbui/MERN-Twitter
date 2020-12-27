@@ -4,8 +4,9 @@ const express = require("express");
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const keys = require('../../config/keys');
+const passport = require('passport');
 
-
+// route to create new user
 router.post('/register', (req, res) => {
   // Check to make sure nobody has already registered with a duplicate email
   User.findOne({ email: req.body.email })
@@ -34,6 +35,7 @@ router.post('/register', (req, res) => {
     })
 })
 
+// route to login users
 router.post('/login', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -69,6 +71,15 @@ router.post('/login', (req, res) => {
             }
         })
     })
+})
+
+//private auth route
+router.get('/current', passport.authenticate('jwt', {session: false}), (req, res) => {
+  res.json({
+    id: req.user.id,
+    handle: req.user.handle,
+    email: req.user.email
+  });
 })
 
 
